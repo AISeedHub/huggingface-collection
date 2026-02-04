@@ -212,3 +212,4 @@ trained_models/
 SmolLM3-Custom-SFT/
 local_dpo_test/
 smol-course-smolvlm2-2.2b-instruct-trl-sft-ChartQA/
+DeepRL-course/Qwen2-0.5B-GRPO-test/

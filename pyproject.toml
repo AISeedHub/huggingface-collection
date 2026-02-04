@@ -19,12 +19,18 @@ dependencies = [
     "trackio>=0.13.1",
     "transformers>=4.57.1",
     "trl>=0.26.2",
-    "ipykernel>=6.0.0",
+    "ipykernel>=6.0.0,<7.0.0",
+    "ipython>=8.0.0,<9.0.0",
     "pyvirtualdisplay>=3.0",
     "huggingface-sb3>=3.0",
     "swig>=4.4.1",
     "ipywidgets>=8.1.8",
     "gymnasium[box2d]>=1.2.3",
+    "math-verify>=0.9.0",
+    "nbformat>=5.10.4",
+    "tensorboardx>=2.6.4",
+    "mlflow>=3.9.0",
+    "python-dotenv>=1.2.1",
 ]
 
 
@@ -40,7 +46,7 @@ lint.select = [
     "SIM",
     "ARG",
     "PIE",
-    "T20",
+    # "T20",
     "Q",
     "N",
 ]
@@ -72,15 +78,15 @@ log_cli_format = "%(levelname)-8s %(asctime)s %(name)s:%(funcName)s:L%(lineno)d 
 # "type" = { cmd = "mypy" }
 
 [[tool.uv.index]]
-name = "pytorch-cu124"
-url = "https://download.pytorch.org/whl/cu124"
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
 explicit = true
 
 
 [tool.uv.sources]
 torch = [
-    { index = "pytorch-cu124", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+    { index = "pytorch-cu128", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
 ]
 torchvision = [
-    { index = "pytorch-cu124", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+    { index = "pytorch-cu128", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
 ]
