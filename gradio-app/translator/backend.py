@@ -10,11 +10,10 @@ class Backend:
     def available_models(self):
         return self.llm_manager.AVAILABLE_MODELS
 
-    def load_model(self, model_id):
+    def load_model(self, model_id, progress_callback=None):
         # Update all handlers
-        self.llm_manager.load_model(model_id)
-
-        return f"Successfully set model to {model_id}"
+        msg = self.llm_manager.load_model(model_id, progress_callback)
+        return msg
 
     def generate_analysis(self, prompt, source_lang="English", target_lang="Korean"):
         """Generate translation using Ollama"""

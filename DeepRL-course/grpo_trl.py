@@ -130,7 +130,7 @@ def main():
         r=8,  # Slightly higher rank for better reasoning
         target_modules=[
             "q_proj",
-            "k_proj",
+            # "k_proj",
             "v_proj",
             # "o_proj",
             # "gate_proj",
@@ -158,7 +158,7 @@ def main():
         bf16=True,
         gradient_accumulation_steps=8,  # Added for stability
         save_strategy="steps",
-        save_steps=10,
+        save_steps=100,
         max_steps=500,  # Set a cap for testing
         num_generations=4,
         max_completion_length=1024,  # Room for "thinking"

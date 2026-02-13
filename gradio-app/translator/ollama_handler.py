@@ -17,9 +17,40 @@ class OllamaLLMManager:
         self.client = ollama.Client(host=host)
         self.current_model = None
         self.AVAILABLE_MODELS = [
+            "SEED.Polygot:27b",
             "translategemma:4b",
             "translategemma:12b",
-            "translategemma:27b",
+            # "translategemma:27b",
+            "zongwei/gemma3-translator:4b",
+            "MedAIBase/Tencent-HY-MT1.5:1.8b",
+            "huihui_ai/hy-mt1.5-abliterated:7b",
+            "mitmul/plamo-2-translate:Q4_K_M",
+            "mistral-nemo:12b",
+            "glm4:9b",
+            "aya:8b",
+            "exaone-deep:7.8b",
+            "exaone-deep:32b",
+            "exaone3.5:7.8b",
+            "exaone3.5:32b",
+            "timHan/llama3.2korean3B4QKM:latest",
+            "lauchacarro/qwen2.5-translator:latest",
+            "phi4:14b",
+            "olmo-3.1:32b",
+            "qwen2.5:72b",
+            "qwen3:8b",
+            "qwen3:32b",
+            "qwen3:235b",
+            "gpt-oss:20b",
+            "gpt-oss:120b",
+            "llama3:70b",
+            "llama3.1:8b",
+            "llama3.1:70b",
+            "llama3.1:405b",
+            "llama3.2:3b",
+            "sailor2:8b",
+            "deepseek-r1:32b",
+            "deepseek-r1:70b",
+            "",
         ]
         self.system_message = self.load_system_message()
         # Set default model
@@ -87,9 +118,9 @@ class OllamaLLMManager:
             logger.error(f"Error saving analysis log: {e}")
             return None
 
-    def load_model(self, model_id: str) -> str:
+    def load_model(self, model_id: str, progress_callback=None) -> str:
         """Set the current model for Ollama inference"""
-        logger.info(f"Setting Ollama model: {model_id}...")
+        logger.info(f"Setting Translator model: {model_id}...")
 
         # Check if model is available locally
         try:
@@ -98,16 +129,16 @@ class OllamaLLMManager:
                 logger.info(
                     f"Model {model_id} not found locally. Attempting to pull..."
                 )
-                pull_success = self._pull_model(model_id)
+                pull_success = self._pull_model(model_id, progress_callback)
                 if not pull_success:
                     return f"Failed to pull model {model_id}"
 
             self.current_model = model_id
-            return f"Successfully set Ollama model to {model_id}"
+            return f"Successfully set Translator model to {model_id}"
 
         except Exception as e:
             if "connection" in str(e).lower():
-                return "Error: Could not connect to Ollama server"
+                return "Error: Could not connect to Translator server"
             return f"Error setting model {model_id}: {str(e)}"
 
     def get_available_models(self) -> list:
@@ -130,7 +161,7 @@ class OllamaLLMManager:
             logger.error(f"Error checking server availability: {e}")
             return False
 
-    def _pull_model(self, model_id: str) -> bool:
+    def _pull_model(self, model_id: str, progress_callback=None) -> bool:
         """Pull a model from Ollama registry"""
         try:
             logger.info(f"Pulling model {model_id}... This may take a while.")
@@ -138,10 +169,20 @@ class OllamaLLMManager:
             # Use the pull method with progress tracking
             for progress in self.client.pull(model_id, stream=True):
                 if "status" in progress:
-                    logger.debug(f"Pull status: {progress['status']}")
+                    status_text = progress["status"]
                     if "total" in progress and "completed" in progress:
-                        percentage = (progress["completed"] / progress["total"]) * 100
-                        logger.debug(f"Progress: {percentage:.1f}%")
+                        total = progress["total"]
+                        completed = progress["completed"]
+                        percentage = (completed / total) * 100
+                        logger.debug(
+                            f"Pulling {model_id}: {percentage:.1f}% ({status_text})"
+                        )
+
+                        if progress_callback:
+                            progress_callback(completed, total, status_text)
+                    else:
+                        if progress_callback:
+                            progress_callback(None, None, status_text)
 
             logger.info(f"Successfully pulled model {model_id}")
             return True
@@ -163,7 +204,7 @@ class OllamaLLMManager:
 
         # Check if server is available
         if not self.is_server_available():
-            yield "Error: Cannot connect to Ollama server"
+            yield "Error: Cannot connect to Translator server"
             return
 
         # Prepare system prompt with languages

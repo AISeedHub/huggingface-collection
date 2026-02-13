@@ -1,3 +1,6 @@
+import base64
+import os
+
 import gradio as gr
 from backend import backend
 
@@ -43,15 +46,22 @@ custom_css = """
 """
 
 with gr.Blocks() as demo:
-    gr.Markdown(
-        """
-        <div id="title-header">
-            <h1>🌍 AI Polyglot Translator</h1>
-            <p>Professional Real-time Translation powered by LLMs</p>
-        </div>
-        """,
-        elem_id="title-header",
-    )
+    # Use Base64 encoding for the logo as requested
+    with gr.Column(elem_id="title-header"):
+        logo_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "../asset/logo.png")
+        )
+        with open(logo_path, "rb") as f:
+            data = base64.b64encode(f.read()).decode("utf-8")
+        gr.Markdown(
+            f"""
+            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 0.5rem;">
+                <img src="data:image/png;base64,{data}" alt="logo" width="50">
+                <h1 style="margin: 0;">AI Polyglot Translator</h1>
+            </div>
+            <p style="text-align: center; margin: 0;">Professional Real-time Translation powered by LLMs</p>
+            """
+        )
 
     with gr.Row():
         with gr.Column(scale=1):
@@ -96,9 +106,18 @@ with gr.Blocks() as demo:
             )
             status_msg = gr.Markdown(f"Current Model: {backend.available_models[0]}")
 
-        def update_model(model_name):
-            backend.load_model(model_name)
-            return f"Current Model: {model_name}"
+        def update_model(model_name, progress=gr.Progress()):
+            def progress_callback(completed, total, status):
+                if total:
+                    progress(
+                        completed / total,
+                        desc=f"{status} ({completed / 1024**3:.2f}GB / {total / 1024**3:.2f}GB)",
+                    )
+                else:
+                    progress(0, desc=status)
+
+            msg = backend.load_model(model_name, progress_callback=progress_callback)
+            return f"{msg} (Current: {model_name})"
 
         model_dropdown.change(
             fn=update_model, inputs=[model_dropdown], outputs=[status_msg]
@@ -116,9 +135,12 @@ with gr.Blocks() as demo:
     clear_btn.click(fn=lambda: ("", ""), outputs=[src_text, tgt_text])
 
 if __name__ == "__main__":
+    asset_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../asset"))
     demo.launch(
         server_name="0.0.0.0",
         server_port=7860,
         theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate"),
         css=custom_css,
+        allowed_paths=[asset_dir],
+        share=True,
     )
