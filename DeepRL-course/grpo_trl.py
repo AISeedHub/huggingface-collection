@@ -17,11 +17,11 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 load_dotenv()
 
 # --- Configuration ---
-MODEL_ID = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+MODEL_ID = "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
 DATASET_ID = "AI-MO/NuminaMath-TIR"
 CACHE_DIR_MODELS = "/data/aiseed/hf-models"
 CACHE_DIR_DATASETS = "/data/aiseed/hf-datasets"
-OUTPUT_DIR = "deepseek-r1-grpo-32b"
+OUTPUT_DIR = "deepseek-r1-Qwen-14B"
 
 # MLflow settings (loaded from .env via load_dotenv)
 
