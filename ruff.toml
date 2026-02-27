@@ -1,0 +1,11 @@
+lint.select = ["B", "E", "F", "I", "UP", "W", "C4", "SIM", "ARG", "PIE", "T20", "Q", "N"]
+lint.ignore = ["B905", "B008", "F811", "E501", "T201", "T203"] # Allow print()
+lint.fixable = ["B", "F", "I", "UP"]
+lint.unfixable = []
+extend-include = ["*.ipynb"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

@@ -216,3 +216,14 @@ DeepRL-course/Qwen*
 DeepRL-course/deepseek*
 unsloth*
 logs/
+# research
+data/*
+!data/.gitkeep
+results/*
+!results/.gitkeep
+mlruns/
+*.pt
+*.pth
+*.bin
+*.model
+wandb/
